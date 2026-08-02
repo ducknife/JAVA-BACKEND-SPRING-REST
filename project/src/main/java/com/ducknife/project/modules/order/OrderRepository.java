@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 // @Repository // nếu đã extends jpa thì không cần thêm annotation này 
 // JpaRepository kế thừa từ Repository, CrudRepository, PagingAndSortingRepository

@@ -2,8 +2,7 @@ package com.ducknife.project.modules.product.dto;
 
 import java.math.BigDecimal;
 
-import com.ducknife.project.modules.category.Category;
-import com.ducknife.project.modules.category.CategoryDTO;
+import com.ducknife.project.modules.category.dto.CategoryDTO;
 import com.ducknife.project.modules.product.Product;
 
 import lombok.AllArgsConstructor;

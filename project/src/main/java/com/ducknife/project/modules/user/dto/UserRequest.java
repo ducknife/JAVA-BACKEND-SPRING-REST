@@ -1,11 +1,9 @@
 package com.ducknife.project.modules.user.dto;
 
-import java.util.HashSet;
 import java.util.Set;
 
-import com.ducknife.project.modules.role.Role;
-
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,9 +16,10 @@ import lombok.NoArgsConstructor;
 public class UserRequest {
     @NotBlank(message = "Tên không được để trống")
     private String fullname;
-    @NotBlank(message = "Tên không được để trống")
+    @NotBlank(message = "Tài khoản không được để trống")
     private String username;
-    @NotBlank(message = "Tên không được để trống")
+    @NotBlank(message = "Mật khẩu không được để trống")
     private String password;
+    @NotNull(message = "Role không được để trống")
     private Set<String> roles;
 }

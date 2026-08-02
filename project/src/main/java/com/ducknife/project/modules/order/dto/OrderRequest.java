@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.ducknife.project.modules.orderdetail.dto.OrderDetailRequest;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

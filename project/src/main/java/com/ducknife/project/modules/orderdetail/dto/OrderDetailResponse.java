@@ -2,7 +2,6 @@ package com.ducknife.project.modules.orderdetail.dto;
 
 import java.math.BigDecimal;
 
-import com.ducknife.project.modules.order.dto.OrderResponse;
 import com.ducknife.project.modules.orderdetail.OrderDetail;
 import com.ducknife.project.modules.product.dto.ProductResponse;
 

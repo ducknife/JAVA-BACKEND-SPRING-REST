@@ -1,4 +1,4 @@
-package com.ducknife.project.security;
+package com.ducknife.project.security.jwt;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

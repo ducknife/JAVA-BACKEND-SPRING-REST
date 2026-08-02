@@ -1,8 +1,8 @@
 spring:
     datasource:
-        url: jdbc:mysql://localhost:3306/astar_hub
-        username: root 
-        password: Hung12062005@
+        url: ${MYSQL_URI}
+        username: ${DB_USERNAME}
+        password: ${DB_PASSWORD}
     jpa:
         hibernate: 
             ddl-auto: validate # không tự sửa cấu trúc bảng 
@@ -24,6 +24,7 @@ spring:
         # baseline-version: 1 # ví dụ ở đây là đã có V1
         out-of-order: false # nếu đã chạy tới V3 mà hôm sau chèn 1 file V2.5 thì báo lỗi luôn (xây dựng tính kỉ luật cho team). Nếu để true thì nó sẽ chạy thêm 
         # file V2.5 đó.
+     
 server:
     port: ${PORT:8080}
 

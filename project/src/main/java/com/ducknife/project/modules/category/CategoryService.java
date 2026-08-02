@@ -10,6 +10,7 @@ import com.ducknife.project.common.exception.ResourceConflictException;
 import com.ducknife.project.common.exception.ResourceNotFoundException;
 import com.ducknife.project.modules.auditlog.AuditLog;
 import com.ducknife.project.modules.auditlog.AuditService;
+import com.ducknife.project.modules.category.dto.CategoryDTO;
 import com.ducknife.project.modules.product.ProductRepository;
 import com.ducknife.project.modules.product.dto.ProductResponse;
 

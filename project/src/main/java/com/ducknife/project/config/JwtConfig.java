@@ -13,14 +13,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 import com.ducknife.project.config.properties.JwtProperties;
+import com.ducknife.project.security.TokenBlacklistService;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -35,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtConfig {
     private final JwtProperties jwtProps;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Bean
     public JwtEncoder jwtEncoder() {
@@ -51,7 +58,18 @@ public class JwtConfig {
     public JwtDecoder jwtDecoder() {
         byte[] secretKeyBytes = Base64.getDecoder().decode(jwtProps.getSecretKey());
         SecretKey key = new SecretKeySpec(secretKeyBytes, "HmacSHA256");
-        return NimbusJwtDecoder.withSecretKey(key).build();   
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withSecretKey(key).build();
+
+        // kiểm tra xem có trong black list không
+        OAuth2TokenValidator<Jwt> notRevoked = jwt -> tokenBlacklistService.isRevoked(jwt.getId())
+                ? OAuth2TokenValidatorResult.failure(
+                    new OAuth2Error("token_revoked", "Token đã bị thu hồi (logout)", null)
+                ) 
+                : OAuth2TokenValidatorResult.success();
+
+        // set validator để check blacklist
+        decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(JwtValidators.createDefault(), notRevoked));
+        return decoder;
     }
 
     @Bean

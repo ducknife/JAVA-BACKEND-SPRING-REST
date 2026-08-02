@@ -21,6 +21,7 @@
   - [2.7 SecurityConfig — Tích Hợp](#27-securityconfig--tích-hợp-oauth2-login)
 - [3. OAuth2 Resource Server](#3-oauth2-resource-server--api-nhận-jwt-từ-bên-ngoài)
 - [4. Khi Nào Dùng Gì?](#4-khi-nào-dùng-gì)
+- [5. 🔒 Senior Review — Cạm Bẫy Thực Tế Khi Lên Production](#5--senior-review--cạm-bẫy-thực-tế-khi-lên-production)
 - [✅ Checklist](#-checklist)
 
 ---
@@ -81,6 +82,9 @@ truy cập tài nguyên của user trên dịch vụ khác **mà không cần bi
 > - User KHÔNG bao giờ nhập password Google trên app của bạn
 > - App KHÔNG biết password Google
 > - User có thể revoke quyền bất kỳ lúc nào
+
+> **🔒 Senior note — `state` parameter (bạn không thấy trong sơ đồ trên vì Spring giấu nó đi):**
+> Thực tế request ở bước 2 còn có `&state=<random-string>`. Đây là cơ chế **chống CSRF cho chính luồng OAuth2** — nếu thiếu, kẻ tấn công có thể tự tạo 1 authorization code của tài khoản GHÉ (attacker) rồi lừa victim mở link redirect đó, khiến victim vô tình đăng nhập vào tài khoản của attacker (session fixation qua OAuth). Spring Security **tự sinh và verify `state`** cho bạn (lưu tạm trong `HttpSessionOAuth2AuthorizationRequestRepository`) — bạn không cần code tay, nhưng phải **hiểu nó tồn tại**, vì nếu app của bạn stateless (JWT, không session) thì bước này sẽ cần cấu hình lại repository (ví dụ dùng cookie-based thay vì session-based) — đây là lỗi rất hay gặp khi ráp OAuth2 Login vào app đã stateless từ JWT (File 3).
 
 ---
 
@@ -205,7 +209,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // 4. Tạo hoặc update user trong DB
         User user = userRepository.findByEmail(email)
             .map(existingUser -> {
-                // User đã tồn tại → update info
+                // ⚠️ XEM GHI CHÚ BẢO MẬT NGAY DƯỚI ĐÂY TRƯỚC KHI COPY ĐOẠN NÀY
                 existingUser.setUsername(name);
                 existingUser.setProvider(
                     AuthProvider.valueOf(registrationId.toUpperCase()));
@@ -234,6 +238,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 }
 ```
+
+> **🔒 Senior note — Account takeover qua auto-link bằng email (lỗi bảo mật thật, không phải lý thuyết):**
+> Đoạn `findByEmail(email).map(existingUser -> ...)` ở trên **tự động gắn** tài khoản Google/GitHub vào user đã tồn tại chỉ vì trùng email — đây là lỗ hổng kinh điển. Kịch bản tấn công: nạn nhân đã có tài khoản local `victim@gmail.com` (đăng ký bằng password). Nếu provider OAuth2 cho phép tạo tài khoản với email **chưa xác thực** trùng với email đó (một số provider ít nghiêm ngặt, hoặc tấn công qua provider bên thứ 3 khác), kẻ tấn công login OAuth2 → hệ thống tự gắn vào tài khoản victim → chiếm quyền truy cập.
+>
+> **Cách né:**
+> 1. Với Google/GitHub thật thì email luôn đã verify, nhưng **vẫn nên check tường minh**: `Boolean emailVerified = oAuth2User.getAttribute("email_verified");` (Google có claim này, GitHub thì gọi thêm `GET /user/emails` để lấy `verified: true`) — nếu `false`, từ chối auto-link.
+> 2. **Không bao giờ** tự động link nếu tài khoản local đó **chưa từng verify email** qua chính hệ thống của bạn.
+> 3. An toàn nhất cho app thật: **không auto-link theo email**. Nếu email trùng nhưng `provider` khác `LOCAL`/khác providerId, trả lỗi "email đã được dùng, vui lòng đăng nhập bằng phương thức cũ" và để user tự chọn link thủ công (có xác thực lại password cũ) — đừng để hệ thống tự quyết.
+>
+> **🔒 Senior note — GitHub có thể trả `email = null`:**
+> User GitHub có thể để email ở chế độ private trong Settings → khi đó claim `"email"` trả về `null`, đoạn code trên sẽ crash hoặc tạo user với email null (tuỳ ràng buộc DB). Thực tế phải gọi thêm `GET https://api.github.com/user/emails` (kèm access_token) để lấy email chính (`primary: true`) — Spring không tự làm bước này giúp bạn.
 
 ### 2.5 CustomOAuth2User
 
@@ -328,6 +343,33 @@ public class OAuth2LoginSuccessHandler
 }
 ```
 
+> **🔒 Senior note — Đây là pattern KHÔNG NÊN dùng ở production, dù rất phổ biến trong tutorial:**
+> Đặt `access_token`/`refresh_token` thật vào query string rồi redirect có 3 vấn đề:
+> 1. **Browser history** — token nằm vĩnh viễn trong lịch sử duyệt web của user.
+> 2. **Referrer header** — nếu trang `/oauth2/callback` của frontend load thêm 1 tài nguyên bên thứ 3 (ảnh, script, font từ CDN...), trình duyệt gửi URL hiện tại (kèm token) qua header `Referer` tới domain đó.
+> 3. **Server access log** — nếu có reverse proxy/CDN (Nginx, Cloudflare) log full URL request, token bị ghi ra log dạng plaintext.
+>
+> **Pattern thực tế các công ty dùng (chọn 1 trong 2):**
+>
+> **Cách A — One-time exchange code (khuyên dùng nếu vẫn phải redirect qua URL):**
+> ```java
+> // Thay vì nhét JWT thật, tạo 1 mã dùng-một-lần, sống 30-60 giây, lưu Redis/cache
+> String exchangeCode = UUID.randomUUID().toString();
+> redisTemplate.opsForValue().set("oauth_exchange:" + exchangeCode,
+>     accessToken + "::" + refreshToken, Duration.ofSeconds(60));
+>
+> String targetUrl = UriComponentsBuilder
+>     .fromUriString("http://localhost:3000/oauth2/callback")
+>     .queryParam("code", exchangeCode)   // KHÔNG phải JWT thật
+>     .build().toUriString();
+> // Frontend nhận "code" → gọi POST /api/auth/exchange {code} → backend trả JWT thật qua response body (không qua URL)
+> ```
+>
+> **Cách B — Refresh token qua httpOnly cookie, chỉ access token (ngắn hạn) mới đi qua URL/body:**
+> Set refresh token bằng `Set-Cookie: refresh_token=...; HttpOnly; Secure; SameSite=Strict` ngay trong response redirect — JS phía frontend không đọc được cookie này (chống XSS đánh cắp refresh token), chỉ access token (sống ngắn, thiệt hại giới hạn) mới lộ ra URL.
+>
+> Việc chọn cách nào phụ thuộc frontend là SPA cùng domain hay khác domain (SameSite/CORS) — nhưng nguyên tắc chung: **refresh token không bao giờ nên chạm vào URL hay localStorage**.
+
 ### 2.7 SecurityConfig — Tích Hợp OAuth2 Login
 
 ```java
@@ -389,14 +431,32 @@ spring:
 
 ---
 
+## 5. 🔒 Senior Review — Cạm Bẫy Thực Tế Khi Lên Production
+
+File note gốc dạy đúng **cơ chế**, nhưng thiếu những thứ chỉ lộ ra khi bạn từng bị pentest/audit hoặc bị khai thác thật. Tổng hợp lại:
+
+| # | Vấn đề | Vì sao quan trọng | Cách xử lý |
+|---|--------|-------------------|-----------|
+| 1 | `state` param chống CSRF | Không tự hiểu nó tồn tại → khi ráp OAuth2 Login vào app stateless (JWT) sẽ toang vì Spring mặc định lưu `state` trong HTTP session | Xem note ở mục 1.2 — cần `AuthorizationRequestRepository` phù hợp nếu app stateless |
+| 2 | Account takeover qua auto-link email | Lỗ hổng OWASP thật (CWE-287), không phải lý thuyết suông | Check `email_verified`, không auto-link nếu local account chưa verify — xem note mục 2.4 |
+| 3 | GitHub trả `email = null` | Code crash hoặc tạo user rác nếu user để email private | Gọi thêm `GET /user/emails`, lấy email có `primary: true` |
+| 4 | Token thật trong URL redirect | Rò rỉ qua browser history, Referrer header, access log | Dùng one-time exchange code hoặc httpOnly cookie — xem note mục 2.6 |
+| 5 | `redirect_uri` không được whitelist chặt | Open Redirect — Google/GitHub *có* validate theo config bạn đăng ký, nhưng nếu bạn tự thêm logic redirect động (`?returnTo=`) thì lại là lỗ hổng riêng của bạn | Redirect URI luôn hardcode/config theo môi trường, không bao giờ nhận từ query param của client |
+| 6 | Persist access_token của Google/GitHub vào DB "phòng khi cần" | Tăng surface area bị tấn công vô ích nếu bạn không thật sự gọi lại Google API sau này | Chỉ lưu nếu có nhu cầu thật (vd: đọc Google Calendar sau này) — dùng `OAuth2AuthorizedClientService`, mã hoá at rest |
+| 7 | PKCE | OAuth 2.1 (bản nháp kế thừa OAuth2, dần thành chuẩn thực tế 2024-2026) khuyến nghị PKCE cho **mọi** client, kể cả confidential | Spring Security tự bật PKCE cho Authorization Code flow từ 5.2+ nếu registration không có `client-secret` (public client); với confidential client (có secret) thì optional nhưng nên cân nhắc nếu roadmap có thêm mobile/SPA sau này |
+
+---
+
 ## ✅ Checklist
 
 - [ ] Hiểu OAuth2 roles (Resource Owner, Client, Auth Server, Resource Server)
-- [ ] Hiểu Authorization Code Flow (7 bước)
+- [ ] Hiểu Authorization Code Flow (7 bước) + vai trò của `state` (chống CSRF)
 - [ ] Config Google/GitHub trong application.yml
-- [ ] CustomOAuth2UserService: extract info → tạo/update user
-- [ ] OAuth2LoginSuccessHandler: tạo JWT → redirect frontend
+- [ ] CustomOAuth2UserService: extract info → tạo/update user, **có check `email_verified` trước khi auto-link**
+- [ ] Xử lý GitHub `email = null` (gọi `/user/emails`)
+- [ ] OAuth2LoginSuccessHandler: tạo JWT → redirect frontend **qua one-time code hoặc httpOnly cookie, không nhét JWT thật vào URL**
 - [ ] Phân biệt OAuth2 Client vs OAuth2 Resource Server
+- [ ] Hiểu vì sao KHÔNG nên persist access_token của provider nếu không dùng lại
 
 ---
 

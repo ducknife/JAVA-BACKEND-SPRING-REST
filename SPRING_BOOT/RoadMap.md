@@ -66,7 +66,7 @@
 | 4.2 | `Bai12/Phase4.2_Authentication_vs_Authorization.md` | Bài 12 | Authentication, Authorization, @PreAuthorize |
 | 4.3 | `Bai12/Phase4.3_JWT_Token.md` | Bài 12 | JWT + oauth2-resource-server |
 | 4.4 | `Bai12/Phase4.4_OAuth2.md` | Bài 12 | OAuth2 Social Login + Resource Server |
-| 4.5 | `Bai12/Phase4.5_BestPractice_Password_CORS_CSRF.md` | Bài 12 | BCrypt, CORS, CSRF |
+| 4.5 | `Bai12/Phase4.5_BestPractice_Password_CORS_CSRF.md` | Bài 12 | BCrypt, CORS, CSRF *(2026: OWASP giờ khuyến nghị Argon2id trước BCrypt — nên học thêm `Argon2PasswordEncoder`)* |
 
 ---
 
@@ -76,10 +76,10 @@
 |---|------|-----|---------|
 | 5.1 | `Bai13/Phase5.1_BeanValidation.md` | Bài 13 | @Valid, Custom Validators, Groups |
 | 5.2 | `Bai14/Phase5.2_DesignPatterns.md` | Bài 14 | DTO, Repository, Service Layer, Builder, Factory, Strategy |
-| 5.3 | `Bai15/Phase5.3_Testing.md` | Bài 15 | JUnit 5, Mockito, @WebMvcTest, @DataJpaTest |
+| 5.3 | `Bai15/Phase5.3_Testing.md` | Bài 15 | JUnit 5, Mockito, @WebMvcTest, @DataJpaTest **+ Testcontainers** *(2026: test với DB thật qua Docker thay vì H2 in-memory, gần như bắt buộc trong CV/thực tế)* |
 | 5.4 | `Bai16/Phase5.4_API_Documentation.md` | Bài 16 | Swagger/OpenAPI, SpringDoc |
 | 5.5 | `Bai17/Phase5.5_Caching.md` | Bài 17 | Spring Cache, Redis, TTL |
-| 5.6 | `Bai18/Phase5.6_Async_Scheduling.md` | Bài 18 | @Async, @Scheduled, Cron |
+| 5.6 | `Bai18/Phase5.6_Async_Scheduling.md` | Bài 18 | @Async, @Scheduled, Cron **+ Virtual Threads** *(2026: Java 21 LTS + Spring Boot 3.2+, `spring.threads.virtual.enabled=true` — đổi hẳn cách nghĩ về blocking I/O so với @Async truyền thống)* |
 
 ---
 
@@ -87,8 +87,8 @@
 
 ### 6.1 Microservices
 - [ ] Spring Cloud
-- [ ] Service Discovery (Eureka)
-- [ ] API Gateway
+- [ ] Service Discovery (Eureka) *(2026: Eureka vẫn tốt để học cơ chế, nhưng production hiện đại thường dùng Kubernetes-native discovery — nên học Eureka trước, biết K8s Service là hướng thay thế)*
+- [ ] API Gateway (Spring Cloud Gateway)
 - [ ] Config Server
 - [ ] Circuit Breaker (Resilience4j)
 
@@ -109,7 +109,7 @@
 ## 📌 Phase 7: Production Ready (Ongoing)
 
 - [ ] Logging (SLF4J, Logback)
-- [ ] Monitoring (Actuator, Prometheus, Grafana)
+- [ ] Monitoring (Actuator, Prometheus, Grafana) **+ Micrometer Tracing / OpenTelemetry** *(2026: Spring Cloud Sleuth đã deprecated từ Spring Boot 3 — distributed tracing giờ dùng Micrometer Tracing + OTel)*
 - [ ] Performance Optimization
 - [ ] Clean Code & SOLID Principles
 - [ ] Code Review Best Practices

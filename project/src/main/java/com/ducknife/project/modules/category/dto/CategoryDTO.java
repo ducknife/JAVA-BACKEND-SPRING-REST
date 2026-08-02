@@ -1,4 +1,6 @@
-package com.ducknife.project.modules.category;
+package com.ducknife.project.modules.category.dto;
+
+import com.ducknife.project.modules.category.Category;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

@@ -7,11 +7,12 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.ducknife.project.common.exception.ResourceConflictException;
 import com.ducknife.project.common.exception.ResourceNotFoundException;
@@ -35,7 +36,8 @@ public class UserService {
         private final RoleRepository roleRepository;
         private final PasswordEncoder passwordEncoder;
 
-        public UserResponse getMe(Long id) {
+        public UserResponse getMe(Jwt jwt) {
+                Long id = Long.valueOf(jwt.getClaimAsString("userId"));
                 User user = userRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
                 return UserResponse.from(user);
@@ -63,14 +65,14 @@ public class UserService {
                                 .collect(Collectors.toList());
         }
 
-        @PreAuthorize("hasAnyRole('ADMIN', 'USER') or #userId == authentication.principal.id")
+        @PreAuthorize("hasRole('ADMIN') or @perm.isSelf(#userId, authentication)")
         public UserResponse getUserById(Long userId) {
                 User user = userRepository.findById(userId)
                                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
                 return UserResponse.from(user);
         }
 
-        @PreAuthorize("hasAnyRole('ADMIN', 'COLLABORATOR', 'USER') or #userId == authenticated.principal.id")
+        @PreAuthorize("hasAnyRole('ADMIN', 'COLLABORATOR') or @perm.isSelf(#userId, authentication)")
         public List<OrderResponse> findOrdersById(Long userId) {
                 if (!userRepository.existsById(userId)) {
                         throw new ResourceNotFoundException("Không tìm thấy người dùng");

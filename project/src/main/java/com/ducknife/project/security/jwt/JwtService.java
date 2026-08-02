@@ -1,4 +1,4 @@
-package com.ducknife.project.security;
+package com.ducknife.project.security.jwt;
 
 import java.time.Instant;
 import java.util.List;
@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import com.ducknife.project.config.properties.JwtProperties;
+import com.ducknife.project.security.AppUserDetails;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +24,7 @@ public class JwtService {
     private final JwtProperties jwtProps;
     private final JwtEncoder jwtEncoder;
 
-    public String generateAccessToken(CustomUserDetails userDetails) {
+    public String generateAccessToken(AppUserDetails userDetails) {
         Instant now = Instant.now();
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -48,7 +49,7 @@ public class JwtService {
         return jwtEncoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
     }
 
-    public String generateRefreshToken(CustomUserDetails userDetails) {
+    public String generateRefreshToken(AppUserDetails userDetails) {
         Instant now = Instant.now();
         JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -61,4 +62,6 @@ public class JwtService {
                 .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
     }
+
+    
 }

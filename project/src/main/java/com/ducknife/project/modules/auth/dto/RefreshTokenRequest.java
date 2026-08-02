@@ -7,14 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Getter
 @Setter
-public class LoginRequest {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class RefreshTokenRequest {
     @NotBlank
-    private String username;
-    @NotBlank
-    private String password;
+    private String refreshToken;
 }

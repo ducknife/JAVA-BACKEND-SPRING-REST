@@ -3,7 +3,6 @@ package com.ducknife.project.modules.user.dto;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.ducknife.project.modules.role.Role;
 import com.ducknife.project.modules.user.User;
 
 import lombok.AllArgsConstructor;

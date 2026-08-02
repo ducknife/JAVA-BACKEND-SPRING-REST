@@ -1,20 +1,13 @@
 package com.ducknife.project.modules.user;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import com.ducknife.project.modules.order.Order;
 import com.ducknife.project.modules.role.Role;
 import com.ducknife.project.modules.user.dto.UserRequest;
 
-import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -56,7 +49,7 @@ public class User {
     @Column(name = "email", length = 100)
     private String email;
 
-    @Column(name = "password", nullable = false, length = 100)
+    @Column(name = "password", length = 100)
     private String password;
 
     // mappedBy = "user" -> Trỏ vào biến 'private User user' trong class Order
@@ -78,6 +71,13 @@ public class User {
              // được update (có transaction khác sửa và lưu trước mình), thì nó báo lỗi
              // OptimisticLockException
     private Long version;
+
+    @Column(name = "provider", nullable = false, length = 20)
+    @Builder.Default
+    private String provider = "LOCAL";
+
+    @Column(name = "provider_id", length = 100)
+    private String providerId;
 
     public static User from(UserRequest user) {
         return User.builder()
