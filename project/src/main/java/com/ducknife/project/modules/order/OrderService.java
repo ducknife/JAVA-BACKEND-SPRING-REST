@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +50,7 @@ public class OrderService {
     }
 
     @Transactional
+    @PreAuthorize("@perm.isSelf(#orderRequest.getUserId(), authentication) or hasAnyRole('ADMIN', 'COLLABORATOR')")
     public OrderResponse add(OrderRequest orderRequest) {
         User user = userRepository.findById(orderRequest.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng!"));

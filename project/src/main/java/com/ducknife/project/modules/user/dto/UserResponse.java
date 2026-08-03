@@ -26,6 +26,7 @@ public class UserResponse {
                 .userId(user.getId())
                 .fullname(user.getFullname())
                 .username(user.getUsername())
+                .email(user.getEmail())
                 .roles(user.getRoles()
                         .stream()
                         .map(r -> r.getName())

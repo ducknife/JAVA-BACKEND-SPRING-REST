@@ -2,6 +2,8 @@ package com.ducknife.project.modules.user.dto;
 
 import java.util.Set;
 
+import com.ducknife.project.common.validation.strongpassword.StrongPassword;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -18,7 +20,7 @@ public class UserRequest {
     private String fullname;
     @NotBlank(message = "Tài khoản không được để trống")
     private String username;
-    @NotBlank(message = "Mật khẩu không được để trống")
+    @StrongPassword
     private String password;
     @NotNull(message = "Role không được để trống")
     private Set<String> roles;

@@ -26,7 +26,7 @@ public class CorsConfig {
         configuration.setAllowedMethods(corsProperties.getAllowedMethods());
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/api/**", configuration);
         return source;
     }
 }

@@ -110,7 +110,7 @@ public class UserService {
                                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng!"));
                 user.setFullname(newUser.getFullname());
                 user.setUsername(newUser.getUsername());
-                user.setPassword(newUser.getPassword());
+                user.setPassword(passwordEncoder.encode(newUser.getPassword()));
                 Set<Role> roles = newUser.getRoles().stream()
                                 .map(role -> roleRepository.findByName(role)
                                                 .orElseThrow(() -> new ResourceNotFoundException(

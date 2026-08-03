@@ -15,10 +15,12 @@ import lombok.NoArgsConstructor;
 public class CategoryDTO {
     @NotBlank(message = "Tên danh mục không được để trống!")
     private String name;
+    private Long id;
 
     public static CategoryDTO from(Category category) {
         return CategoryDTO.builder()    
                         .name(category.getName())
+                        .id(category.getId())
                         .build();
     }
 }

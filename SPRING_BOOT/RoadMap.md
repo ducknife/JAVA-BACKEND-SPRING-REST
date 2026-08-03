@@ -83,6 +83,29 @@
 
 ---
 
+## 📌 Phase 5.5: Kiến Trúc Phần Mềm (1-2 tuần) — Chưa bắt đầu
+
+> Học trước Phase 6 — cần hiểu tư duy kiến trúc trước khi vào tooling microservices, không phải ngược lại.
+
+### Kiến trúc ứng dụng
+- [ ] Layered Architecture (đang dùng) vs Hexagonal/Clean Architecture — ranh giới phụ thuộc, vì sao Controller không nên biết Entity
+- [ ] Domain-Driven Design cơ bản — Entity vs Value Object, Aggregate Root, Bounded Context
+
+### Thiết kế API
+- [ ] REST Maturity Model (Richardson), versioning (URI vs Header)
+- [ ] Idempotency, HATEOAS
+
+### Nền tảng System Design
+- [ ] Scaling ngang vs dọc, Load Balancer
+- [ ] CAP theorem, Consistency Model (strong vs eventual) — lý do tồn tại của Redis/Message Queue/Microservices ở phase sau
+
+### Kiến trúc phân tán
+- [ ] Event-Driven Architecture, CQRS — chuẩn bị tư duy trước Message Queue (Phase 6.2)
+- [ ] Monolith vs Microservices — khung quyết định khi nào nên tách, Strangler Fig Pattern
+- [ ] 12-Factor App — nguyên tắc app cloud-native, liên quan trực tiếp Docker/K8s/Config Server ở Phase 6
+
+---
+
 ## 📌 Phase 6: Microservices & DevOps (4-6 tuần) — Chưa bắt đầu
 
 ### 6.1 Microservices
