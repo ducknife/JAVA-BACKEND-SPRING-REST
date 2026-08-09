@@ -99,13 +99,9 @@ public class AuthService {
     @Transactional
     public void changePassword(Jwt accessToken, ChangePasswordRequest request) {
         User user = userRepository.findByUsername(accessToken.getSubject())
-                .orElseThrow(() -> new ResourceNotFoundException("Khong tìm thấy người dùng!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng!"));
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw new InvalidRequestException("Mật khẩu cũ không đúng!");
-        }
-
-        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
-            throw new InvalidRequestException("Mật khẩu xác nhận không đúng!");
         }
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));

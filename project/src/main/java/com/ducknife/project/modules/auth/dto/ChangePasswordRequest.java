@@ -1,5 +1,6 @@
 package com.ducknife.project.modules.auth.dto;
 
+import com.ducknife.project.common.validation.passwordmatch.PasswordMatch;
 import com.ducknife.project.common.validation.strongpassword.StrongPassword;
 
 import jakarta.validation.constraints.NotBlank;
@@ -14,6 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@PasswordMatch // tự động so sánh newpassword với confirmpassword;
 public class ChangePasswordRequest {
     @NotBlank
     private String oldPassword;

@@ -1,7 +1,5 @@
 package com.ducknife.project.modules.auth.dto;
 
-import org.springframework.security.oauth2.jwt.Jwt;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

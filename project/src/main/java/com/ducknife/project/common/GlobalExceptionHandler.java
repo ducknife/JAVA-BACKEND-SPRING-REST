@@ -13,7 +13,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import com.ducknife.project.common.exception.AppException;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice

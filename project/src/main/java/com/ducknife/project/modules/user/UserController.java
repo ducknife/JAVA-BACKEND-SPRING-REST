@@ -10,6 +10,7 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ducknife.project.common.ApiResponse;
+import com.ducknife.project.common.validation.group.OnCreate;
+import com.ducknife.project.common.validation.group.OnUpdate;
 import com.ducknife.project.modules.order.dto.OrderResponse;
 import com.ducknife.project.modules.user.dto.UserRequest;
 import com.ducknife.project.modules.user.dto.UserResponse;
@@ -71,13 +74,13 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<UserResponse>> addUser(@RequestBody @Valid UserRequest user) {
+    public ResponseEntity<ApiResponse<UserResponse>> addUser(@RequestBody @Validated(OnCreate.class) UserRequest user) {
         UserResponse savedUser = userService.addUser(user);
         return ApiResponse.created(savedUser);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> updateUser(@PathVariable Long id, @RequestBody @Valid UserRequest user) {
+    public ResponseEntity<ApiResponse<String>> updateUser(@PathVariable Long id, @RequestBody @Validated(OnUpdate.class) UserRequest user) {
         userService.updateUser(id, user);
         return ApiResponse.ok("Cập nhật người dùng thành công!");
     }
