@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class CategoryDTO {
-    @NotBlank(message = "Tên danh mục không được để trống!")
+    @NotBlank(message = "{category.name.notblank}")
     private String name;
     private Long id;
 

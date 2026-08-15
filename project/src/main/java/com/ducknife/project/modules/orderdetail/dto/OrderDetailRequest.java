@@ -14,9 +14,9 @@ import lombok.Setter;
 @Setter
 @Getter
 public class OrderDetailRequest {
-    @NotNull(message = "Sản phẩm không được để trống")
+    @NotNull(message = "{orderdetail.product.notnull}")
     private Long productId;
-    @NotNull(message = "Số lượng không được để trống")
-    @Positive(message = "Số lượng phải lớn hơn 0")
+    @NotNull(message = "{orderdetail.quantity.notnull}")
+    @Positive(message = "{orderdetail.quantity.positive}")
     private Long quantity;
 }

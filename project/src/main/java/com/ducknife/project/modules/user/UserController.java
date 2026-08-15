@@ -28,7 +28,6 @@ import com.ducknife.project.modules.order.dto.OrderResponse;
 import com.ducknife.project.modules.user.dto.UserRequest;
 import com.ducknife.project.modules.user.dto.UserResponse;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -40,7 +39,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<UserResponse>>> getUsers(
-            @PageableDefault(page = 0, size = 5, sort = "fullname", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(page = 0, sort = "fullname", direction = Sort.Direction.DESC) Pageable pageable) {
         return ApiResponse.ok(userService.getUsers(pageable));
     }
 
@@ -90,6 +89,5 @@ public class UserController {
         userService.deleteUserById(id);
         return ResponseEntity.noContent().build();
     }
-
 
 }

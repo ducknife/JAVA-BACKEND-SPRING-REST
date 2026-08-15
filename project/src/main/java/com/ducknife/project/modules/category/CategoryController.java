@@ -76,14 +76,14 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<CategoryDTO>> updateCategoryInfo(@PathVariable Long id, @RequestBody CategoryDTO category) {
+    public ResponseEntity<ApiResponse<CategoryDTO>> updateCategoryInfo(@PathVariable Long id, @RequestBody @Valid CategoryDTO category) {
         categoryService.updateCategory(id, category);
         return ApiResponse.ok(category);
     }
 
     @PatchMapping("/{id}") // PATCH chỉ cập nhật 1 trường, nếu chỉ cập nhật trường tên thì code này giống
                            // code của PUT
-    public ResponseEntity<ApiResponse<CategoryDTO>> updateCategoryName(@PathVariable Long id, @RequestBody CategoryDTO category) {
+    public ResponseEntity<ApiResponse<CategoryDTO>> updateCategoryName(@PathVariable Long id, @RequestBody @Valid CategoryDTO category) {
         categoryService.updateCategory(id, category);
         return ApiResponse.ok(category);
     }

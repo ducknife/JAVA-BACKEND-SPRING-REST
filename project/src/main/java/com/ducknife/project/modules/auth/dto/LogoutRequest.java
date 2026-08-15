@@ -13,6 +13,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class LogoutRequest {
-    @NotBlank
+    @NotBlank(message = "{auth.refreshtoken.notblank}")
     private String refreshToken;
 }

@@ -13,6 +13,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RefreshTokenRequest {
-    @NotBlank
+    @NotBlank(message = "{auth.refreshtoken.notblank}")
     private String refreshToken;
 }

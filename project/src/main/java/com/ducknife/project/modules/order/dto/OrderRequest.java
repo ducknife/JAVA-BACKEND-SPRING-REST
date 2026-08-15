@@ -19,9 +19,9 @@ import lombok.Setter;
 @Setter
 @Getter
 public class OrderRequest {
-    @NotNull(message = "Id người dùng không được bỏ trống")
+    @NotNull(message = "{order.userid.notnull}")
     private Long userId;
     @Valid
-    @NotEmpty(message = "Đơn hàng phải có ít nhất 1 sản phẩm")
+    @NotEmpty(message = "{order.items.notempty}")
     private List<OrderDetailRequest> orderDetails;
 }

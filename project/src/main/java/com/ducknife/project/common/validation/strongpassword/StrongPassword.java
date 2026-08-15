@@ -15,7 +15,7 @@ import jakarta.validation.Payload;
 public @interface StrongPassword {
 
     // 3 method này là bắt buộc phải có của 1 custom validation
-    String message() default "Mật khẩu phải có ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt, tối thiểu 8 ký tự";
+    String message() default "{validation.password.strong}";
 
     Class<?>[] groups() default {};
 

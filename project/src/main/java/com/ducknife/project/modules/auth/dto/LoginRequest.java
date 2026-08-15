@@ -13,8 +13,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LoginRequest {
-    @NotBlank
+    @NotBlank(message = "{auth.username.notblank}")
     private String username;
-    @NotBlank
+    @NotBlank(message = "{auth.password.notblank}")
     private String password;
 }

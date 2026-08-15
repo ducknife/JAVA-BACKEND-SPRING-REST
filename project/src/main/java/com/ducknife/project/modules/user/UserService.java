@@ -108,6 +108,11 @@ public class UserService {
         public void updateUser(Long id, UserRequest newUser) {
                 User user = userRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng!"));
+                userRepository.findByUsername(newUser.getUsername())
+                                .filter(u -> !u.getId().equals(id))
+                                .ifPresent(u -> {
+                                        throw new ResourceConflictException("Username đã tồn tại");
+                                });
                 user.setFullname(newUser.getFullname());
                 user.setUsername(newUser.getUsername());
                 if (newUser.getPassword() != null && !newUser.getPassword().isBlank()) {

@@ -12,7 +12,7 @@ import jakarta.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = UniqueUsernameValidator.class)
 public @interface UniqueUsername {
-    String message() default "Username đã tồn tại!";
+    String message() default "{validation.username.unique}";
 
     Class<?>[] groups() default {};
 

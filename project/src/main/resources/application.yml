@@ -17,6 +17,11 @@ spring:
                         client-id: ${GITHUB_CLIENT_ID}
                         client-secret: ${GITHUB_CLIENT_SECRET}
                         scope: read:user, user:email
+    data: 
+        web: 
+            pageable: 
+                default-page-size: 5
+                max-page-size: 50
 
 admin:
     bootstrap:

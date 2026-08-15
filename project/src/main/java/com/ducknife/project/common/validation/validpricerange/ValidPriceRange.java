@@ -1,4 +1,4 @@
-package com.ducknife.project.common.validation.passwordmatch;
+package com.ducknife.project.common.validation.validpricerange;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,9 +10,9 @@ import jakarta.validation.Payload;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = PasswordMatchValidator.class)
-public @interface PasswordMatch {
-    String message() default "{validation.password.match}";
+@Constraint(validatedBy = ValidPriceRangeValidator.class)
+public @interface ValidPriceRange {
+    String message() default "{validation.pricerange}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

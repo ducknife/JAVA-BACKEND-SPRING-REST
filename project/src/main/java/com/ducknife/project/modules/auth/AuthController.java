@@ -31,7 +31,7 @@ public class AuthController {
     private final OAuth2ExchangeStore exchangeStore;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody @Valid LoginRequest request) {
         return ApiResponse.ok(authService.checkLogin(request));
     }
 

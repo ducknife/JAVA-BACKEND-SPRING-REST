@@ -17,13 +17,13 @@ import lombok.Setter;
 @Builder
 @PasswordMatch // tự động so sánh newpassword với confirmpassword;
 public class ChangePasswordRequest {
-    @NotBlank
+    @NotBlank(message = "{auth.oldpassword.notblank}")
     private String oldPassword;
-    @NotBlank
+    @NotBlank(message = "{auth.newpassword.notblank}")
     @StrongPassword
     private String newPassword;
-    @NotBlank
+    @NotBlank(message = "{auth.confirmpassword.notblank}")
     private String confirmPassword;
-    @NotBlank
+    @NotBlank(message = "{auth.refreshtoken.notblank}")
     private String refreshToken;
 }
