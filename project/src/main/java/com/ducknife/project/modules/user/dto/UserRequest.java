@@ -17,6 +17,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/* NotNull = khác null
+NotEmpty = NotNull + size() > 0
+NotBlank = NotNull + trim().length() > 0  */
 @Getter
 @Setter
 @NoArgsConstructor
