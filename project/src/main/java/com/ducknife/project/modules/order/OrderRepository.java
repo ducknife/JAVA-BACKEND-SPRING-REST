@@ -15,4 +15,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>{
 
     @EntityGraph(attributePaths = {"user", "orderDetails"} )
     List<Order> findAll();
+
+    boolean existsByUserId(Long userId);
 }
