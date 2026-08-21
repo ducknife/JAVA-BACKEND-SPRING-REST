@@ -1,6 +1,7 @@
 package com.ducknife.project.modules.order;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ducknife.project.common.exception.ResourceNotFoundException;
 import com.ducknife.project.modules.invoice.Invoice;
+import com.ducknife.project.modules.order.discount.DiscountCalculator;
 import com.ducknife.project.modules.order.dto.OrderRequest;
 import com.ducknife.project.modules.order.dto.OrderResponse;
 import com.ducknife.project.modules.orderdetail.OrderDetail;
@@ -24,9 +26,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class OrderService {
+
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final DiscountCalculator discountCalculator;
 
     public List<OrderResponse> getOrders() {
         return orderRepository.findAll()
@@ -54,6 +58,7 @@ public class OrderService {
     public OrderResponse add(OrderRequest orderRequest) {
         User user = userRepository.findById(orderRequest.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng!"));
+
         Order order = Order.from(orderRequest, user);
         List<OrderDetail> orderDetails = orderRequest.getOrderDetails().stream()
                 .map(od -> {
@@ -62,13 +67,22 @@ public class OrderService {
                     return OrderDetail.from(od, product, order);
                 })
                 .collect(Collectors.toList());
+
+        // Tính tổng tiền
         BigDecimal totalPrice = orderDetails.stream()
                 .map(od -> od.getPrice().multiply(BigDecimal.valueOf(od.getQuantity())))
                 .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
+        
+        BigDecimal discountRate = discountCalculator.rateFor(user, totalPrice);
+        
+        totalPrice = totalPrice.subtract(discountRate.multiply(totalPrice))
+                .setScale(0, RoundingMode.HALF_UP);
+
         Invoice invoice = Invoice.builder()
                 .order(order)
                 .totalPrice(totalPrice)
                 .build();
+
         order.setOrderDetails(orderDetails);
         order.setInvoice(invoice);
         Order savedOrder = orderRepository.save(order);
