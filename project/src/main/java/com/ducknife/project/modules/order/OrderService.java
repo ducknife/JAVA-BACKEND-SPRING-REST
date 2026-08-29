@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ducknife.project.common.exception.ResourceNotFoundException;
 import com.ducknife.project.modules.invoice.Invoice;
+import com.ducknife.project.modules.order.action.OrderActionFactory;
+import com.ducknife.project.modules.order.action.OrderActionType;
 import com.ducknife.project.modules.order.discount.DiscountCalculator;
 import com.ducknife.project.modules.order.dto.OrderRequest;
 import com.ducknife.project.modules.order.dto.OrderResponse;
@@ -27,65 +29,75 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class OrderService {
 
-    private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
-    private final ProductRepository productRepository;
-    private final DiscountCalculator discountCalculator;
+        private final OrderRepository orderRepository;
+        private final UserRepository userRepository;
+        private final ProductRepository productRepository;
+        private final DiscountCalculator discountCalculator;
+        private final OrderActionFactory orderActionFactory;
 
-    public List<OrderResponse> getOrders() {
-        return orderRepository.findAll()
-                .stream()
-                .map(OrderResponse::from) // không còn bị N + 1 vì đã JOIN FETCH
-                .collect(Collectors.toList());
-    }
+        public List<OrderResponse> getOrders() {
+                return orderRepository.findAll()
+                                .stream()
+                                .map(OrderResponse::from) // không còn bị N + 1 vì đã JOIN FETCH
+                                .collect(Collectors.toList());
+        }
 
-    public OrderResponse getOrderById(Long id) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng!"));
-        return OrderResponse.from(order);
-    }
+        public OrderResponse getOrderById(Long id) {
+                Order order = orderRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng!"));
+                return OrderResponse.from(order);
+        }
 
-    public Long countOrders() {
-        return orderRepository.count();
-    }
+        public Long countOrders() {
+                return orderRepository.count();
+        }
 
-    public Boolean OrderExistedById(Long id) {
-        return orderRepository.existsById(id);
-    }
+        public Boolean OrderExistedById(Long id) {
+                return orderRepository.existsById(id);
+        }
 
-    @Transactional
-    @PreAuthorize("@perm.isSelf(#orderRequest.getUserId(), authentication) or hasAnyRole('ADMIN', 'COLLABORATOR')")
-    public OrderResponse add(OrderRequest orderRequest) {
-        User user = userRepository.findById(orderRequest.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng!"));
+        @Transactional
+        @PreAuthorize("@perm.isSelf(#orderRequest.getUserId(), authentication) or hasAnyRole('ADMIN', 'COLLABORATOR')")
+        public OrderResponse add(OrderRequest orderRequest) {
+                User user = userRepository.findById(orderRequest.getUserId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng!"));
 
-        Order order = Order.from(orderRequest, user);
-        List<OrderDetail> orderDetails = orderRequest.getOrderDetails().stream()
-                .map(od -> {
-                    Product product = productRepository.findById(od.getProductId())
-                            .orElseThrow(() -> new ResourceNotFoundException("Sản phẩm không tồn tại!"));
-                    return OrderDetail.from(od, product, order);
-                })
-                .collect(Collectors.toList());
+                Order order = Order.from(orderRequest, user);
+                List<OrderDetail> orderDetails = orderRequest.getOrderDetails().stream()
+                                .map(od -> {
+                                        Product product = productRepository.findById(od.getProductId())
+                                                        .orElseThrow(() -> new ResourceNotFoundException(
+                                                                        "Sản phẩm không tồn tại!"));
+                                        return OrderDetail.from(od, product, order);
+                                })
+                                .collect(Collectors.toList());
 
-        // Tính tổng tiền
-        BigDecimal totalPrice = orderDetails.stream()
-                .map(od -> od.getPrice().multiply(BigDecimal.valueOf(od.getQuantity())))
-                .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
-        
-        BigDecimal discountRate = discountCalculator.rateFor(user, totalPrice);
-        
-        totalPrice = totalPrice.subtract(discountRate.multiply(totalPrice))
-                .setScale(0, RoundingMode.HALF_UP);
+                // Tính tổng tiền
+                BigDecimal totalPrice = orderDetails.stream()
+                                .map(od -> od.getPrice().multiply(BigDecimal.valueOf(od.getQuantity())))
+                                .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
 
-        Invoice invoice = Invoice.builder()
-                .order(order)
-                .totalPrice(totalPrice)
-                .build();
+                BigDecimal discountRate = discountCalculator.rateFor(user, totalPrice);
 
-        order.setOrderDetails(orderDetails);
-        order.setInvoice(invoice);
-        Order savedOrder = orderRepository.save(order);
-        return OrderResponse.from(savedOrder);
-    }
+                totalPrice = totalPrice.subtract(discountRate.multiply(totalPrice))
+                                .setScale(0, RoundingMode.HALF_UP);
+
+                Invoice invoice = Invoice.builder()
+                                .order(order)
+                                .totalPrice(totalPrice)
+                                .build();
+
+                order.setOrderDetails(orderDetails);
+                order.setInvoice(invoice);
+                Order savedOrder = orderRepository.save(order);
+                return OrderResponse.from(savedOrder);
+        }
+
+        // tiêu thụ factory
+        @Transactional
+        public void performAction(Long orderId, OrderActionType type) {
+                Order order = orderRepository.findById(orderId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng"));
+                orderActionFactory.get(type).handle(order);
+        }
 }

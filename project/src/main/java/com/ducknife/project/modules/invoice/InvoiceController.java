@@ -6,10 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ducknife.project.common.ApiResponse;
 import com.ducknife.project.modules.invoice.dto.InvoiceResponse;
+import com.ducknife.project.modules.invoice.export.InvoiceExportType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +31,14 @@ public class InvoiceController {
         @PathVariable Long orderId
     ) {
         return ApiResponse.ok(invoiceService.getInvoiceByOrderId(orderId));
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<ApiResponse<String>> getInvoiceInfo(
+        @RequestParam Long invoiceId,
+        @RequestParam(required = false, defaultValue = "SIMPLE") InvoiceExportType type
+    ) {
+        return ApiResponse.ok(invoiceService.getInfo(invoiceId, type));
     }
     
 }

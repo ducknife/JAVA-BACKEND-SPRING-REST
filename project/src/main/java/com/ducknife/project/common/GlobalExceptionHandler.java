@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.ducknife.project.common.exception.AppException;
@@ -62,6 +63,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler { // 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<?>> handleAccessDeniedException(AccessDeniedException e) {
         return ApiResponse.error(403, "Bạn không có quyền truy cập vào tài nguyên này");
+    }
+
+    // Bắt lỗi truyền type không đúng 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<?>> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
+        return ApiResponse.error(400, "Tham số " + e.getName() + " không hợp lệ");
     }
 
     // Bắt lỗi hệ thống, lưới cuối cùng bắt những lỗi ko ngờ tới
