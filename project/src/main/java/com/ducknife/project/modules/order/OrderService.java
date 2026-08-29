@@ -16,6 +16,7 @@ import com.ducknife.project.modules.order.action.OrderActionType;
 import com.ducknife.project.modules.order.discount.DiscountCalculator;
 import com.ducknife.project.modules.order.dto.OrderRequest;
 import com.ducknife.project.modules.order.dto.OrderResponse;
+import com.ducknife.project.modules.order.shipping.ShippingFeeCalculator;
 import com.ducknife.project.modules.orderdetail.OrderDetail;
 import com.ducknife.project.modules.product.Product;
 import com.ducknife.project.modules.product.ProductRepository;
@@ -34,6 +35,7 @@ public class OrderService {
         private final ProductRepository productRepository;
         private final DiscountCalculator discountCalculator;
         private final OrderActionFactory orderActionFactory;
+        private final ShippingFeeCalculator shippingFeeCalculator;
 
         public List<OrderResponse> getOrders() {
                 return orderRepository.findAll()
@@ -72,15 +74,26 @@ public class OrderService {
                                 })
                                 .collect(Collectors.toList());
 
+                // tính tổng số lượng
+                int totalQuantity = orderDetails.stream()
+                                .mapToInt(od -> od.getQuantity().intValue())
+                                .sum();
+
                 // Tính tổng tiền
                 BigDecimal totalPrice = orderDetails.stream()
                                 .map(od -> od.getPrice().multiply(BigDecimal.valueOf(od.getQuantity())))
                                 .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
 
+                // Tính phí vận chuyển
+                BigDecimal shippingFee = shippingFeeCalculator.feeFor(totalPrice, totalQuantity);
+
+                // tính phí giảm giá
                 BigDecimal discountRate = discountCalculator.rateFor(user, totalPrice);
 
                 totalPrice = totalPrice.subtract(discountRate.multiply(totalPrice))
                                 .setScale(0, RoundingMode.HALF_UP);
+
+                totalPrice = totalPrice.add(shippingFee);
 
                 Invoice invoice = Invoice.builder()
                                 .order(order)

@@ -84,6 +84,7 @@ public class User {
                 .fullname(user.getFullname())
                 .username(user.getUsername())
                 .password(user.getPassword())
+                .email(user.getEmail())
                 .build();
     }
 

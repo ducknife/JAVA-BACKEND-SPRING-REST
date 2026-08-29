@@ -35,4 +35,5 @@ public class UserRequest {
     private String password;
     @NotNull(message = "{user.roles.notnull}", groups = { BasicCheck.class, OnUpdate.class })
     private Set<String> roles;
+    private String email;
 }
