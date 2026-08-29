@@ -115,6 +115,7 @@ public class UserService {
                                 });
                 user.setFullname(newUser.getFullname());
                 user.setUsername(newUser.getUsername());
+                user.setEmail(newUser.getEmail());
                 if (newUser.getPassword() != null && !newUser.getPassword().isBlank()) {
                         user.setPassword(passwordEncoder.encode(newUser.getPassword()));
                 }

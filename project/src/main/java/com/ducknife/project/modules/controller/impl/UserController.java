@@ -1,4 +1,4 @@
-package com.ducknife.project.modules.domain.impl;
+package com.ducknife.project.modules.controller.impl;
 
 import java.util.List;
 
@@ -7,18 +7,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.ducknife.project.common.ApiResponse;
-import com.ducknife.project.modules.domain.api.UserApiInterface;
+import com.ducknife.project.modules.controller.api.UserApiInterface;
 import com.ducknife.project.modules.user.UserService;
 import com.ducknife.project.modules.user.dto.UserResponse;
 
 import lombok.RequiredArgsConstructor;
 
-@RestController
+// @RestController
 @RequiredArgsConstructor
 public class UserController implements UserApiInterface {
 
@@ -39,5 +40,10 @@ public class UserController implements UserApiInterface {
     @Override
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable Long id) {
         return ApiResponse.ok(userService.getUserById(id));
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<UserResponse>> getMe(@AuthenticationPrincipal Jwt jwt) {
+        return ApiResponse.ok(userService.getMe(jwt));
     }
 }
