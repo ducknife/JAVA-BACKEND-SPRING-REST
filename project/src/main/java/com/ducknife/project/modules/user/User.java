@@ -79,14 +79,14 @@ public class User {
     @Column(name = "provider_id", length = 100)
     private String providerId;
 
-    public static User from(UserRequest user) {
-        return User.builder()
-                .fullname(user.getFullname())
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .email(user.getEmail())
-                .build();
-    }
+    // public static User from(UserRequest user) {
+    //     return User.builder()
+    //             .fullname(user.getFullname())
+    //             .username(user.getUsername())
+    //             .password(user.getPassword())
+    //             .email(user.getEmail())
+    //             .build();
+    // }
 
 }
 // Inverse side: Luôn là phía @OneToMany, chỉ mang ý nghĩa read-only;

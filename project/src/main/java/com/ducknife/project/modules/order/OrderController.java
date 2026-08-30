@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ducknife.project.common.ApiResponse;
+import com.ducknife.project.modules.order.action.OrderActionType;
 import com.ducknife.project.modules.order.dto.OrderRequest;
 import com.ducknife.project.modules.order.dto.OrderResponse;
 
@@ -42,6 +43,12 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponse>> addOrder(@RequestBody @Valid OrderRequest order) {
         OrderResponse savedOrder = orderService.add(order);
         return ApiResponse.created(savedOrder);
+    }
+
+    @PostMapping("/cancel/{id}")
+    public ResponseEntity<Void> cancelOrder(@PathVariable Long id) {
+        orderService.performAction(id, OrderActionType.CANCEL);
+        return ResponseEntity.noContent().build();
     }
 
 }

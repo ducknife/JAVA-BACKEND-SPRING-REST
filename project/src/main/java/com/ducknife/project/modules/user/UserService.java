@@ -23,6 +23,7 @@ import com.ducknife.project.modules.role.Role;
 import com.ducknife.project.modules.role.RoleRepository;
 import com.ducknife.project.modules.user.dto.UserRequest;
 import com.ducknife.project.modules.user.dto.UserResponse;
+import com.ducknife.project.modules.user.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,25 +36,26 @@ public class UserService {
         private final OrderRepository orderRepository;
         private final RoleRepository roleRepository;
         private final PasswordEncoder passwordEncoder;
+        private final UserMapper userMapper;
 
         public UserResponse getMe(Jwt jwt) {
                 Long id = Long.valueOf(jwt.getClaimAsString("userId"));
                 User user = userRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
-                return UserResponse.from(user);
+                return userMapper.toResponse(user);
         }
 
         @PreAuthorize("hasAnyRole('ADMIN', 'COLLABORATOR')")
         public Page<UserResponse> getUsers(Pageable pageable) {
                 return userRepository.findByNameLength(pageable)
-                                .map(UserResponse::from);
+                                .map(userMapper::toResponse);
         }
 
         @PreAuthorize("hasRole('ADMIN')")
         public List<UserResponse> getUsersByIdLessThan(Long id, Sort sort) {
                 return userRepository.findByIdLessThan(id, sort)
                                 .stream()
-                                .map(UserResponse::from)
+                                .map(userMapper::toResponse)
                                 .collect(Collectors.toList());
         }
 
@@ -61,7 +63,7 @@ public class UserService {
         public List<UserResponse> getUserByFullname(String keyword) {
                 return userRepository.findByFullname(keyword)
                                 .stream()
-                                .map(UserResponse::from)
+                                .map(userMapper::toResponse)
                                 .collect(Collectors.toList());
         }
 
@@ -69,7 +71,7 @@ public class UserService {
         public UserResponse getUserById(Long userId) {
                 User user = userRepository.findById(userId)
                                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
-                return UserResponse.from(user);
+                return userMapper.toResponse(user);
         }
 
         @PreAuthorize("hasAnyRole('ADMIN', 'COLLABORATOR') or @perm.isSelf(#userId, authentication)")
@@ -91,7 +93,7 @@ public class UserService {
                 if (userRepository.existsByUsername(user.getUsername())) {
                         throw new ResourceConflictException("Username " + user.getUsername() + " đã tồn tại!");
                 } // comment code này đi là bị ăn bom từ DB
-                User newUser = User.from(user);
+                User newUser = userMapper.toEntity(user);
                 newUser.setPassword(passwordEncoder.encode(user.getPassword()));
                 Set<Role> roles = user.getRoles().stream()
                                 .map(role -> roleRepository.findByName(role)
@@ -100,7 +102,7 @@ public class UserService {
                                 .collect(Collectors.toSet());
                 newUser.setRoles(roles);
                 User savedUser = userRepository.save(newUser);
-                return UserResponse.from(savedUser);
+                return userMapper.toResponse(savedUser);
         }
 
         @PreAuthorize("@perm.canUpdateUser(#id, authentication)")

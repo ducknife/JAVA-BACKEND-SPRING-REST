@@ -108,9 +108,16 @@ public class OrderService {
 
         // tiêu thụ factory
         @Transactional
+        @PreAuthorize("hasAnyRole('ADMIN', 'COLLABORATOR')")
         public void performAction(Long orderId, OrderActionType type) {
                 Order order = orderRepository.findById(orderId)
                                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng"));
                 orderActionFactory.get(type).handle(order);
         }
+
+        // test self-invocation (đã học trong transactional nhưng giờ học lại ở proxy pattern)
+        // vì nó chỉ là performAction với tham số cố định => gọi luôn ở controller vì đã có proxy order SErvice
+        // public void quickCancel(Long orderId) {
+        //         performAction(orderId, OrderActionType.CANCEL);
+        // }
 }
