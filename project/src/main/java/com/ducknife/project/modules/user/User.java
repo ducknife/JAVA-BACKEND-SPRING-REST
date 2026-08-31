@@ -6,7 +6,6 @@ import java.util.Set;
 
 import com.ducknife.project.modules.order.Order;
 import com.ducknife.project.modules.role.Role;
-import com.ducknife.project.modules.user.dto.UserRequest;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

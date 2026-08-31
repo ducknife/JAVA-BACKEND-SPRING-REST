@@ -2,7 +2,6 @@ package com.ducknife.project.modules.invoice.dto;
 
 import java.math.BigDecimal;
 
-import com.ducknife.project.modules.invoice.Invoice;
 import com.ducknife.project.modules.order.dto.OrderResponse;
 
 import lombok.AllArgsConstructor;
@@ -21,11 +20,11 @@ public class InvoiceResponse {
     private OrderResponse order;
     private BigDecimal totalPrice;
 
-    public static InvoiceResponse from(Invoice invoice) {
-        return InvoiceResponse.builder()
-                .id(invoice.getId())
-                .order(OrderResponse.from(invoice.getOrder()))
-                .totalPrice(invoice.getTotalPrice())
-                .build();
-    }
+    // public static InvoiceResponse from(Invoice invoice, OrderMapper orderMapper) {
+    //     return InvoiceResponse.builder()
+    //             .id(invoice.getId())
+    //             .order(orderMapper.toResponse(invoice.getOrder()))
+    //             .totalPrice(invoice.getTotalPrice())
+    //             .build();
+    // }
 }

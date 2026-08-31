@@ -49,12 +49,12 @@ public class OrderDetail {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private Product product;
 
-    public static OrderDetail from(OrderDetailRequest orderRequest, Product product, Order order) {
-        return OrderDetail.builder()
-                .quantity(orderRequest.getQuantity())
-                .product(product)
-                .price(product.getPrice())
-                .order(order)
-                .build();
-    }
+    // public static OrderDetail from(OrderDetailRequest orderRequest, Product product, Order order) {
+    //     return OrderDetail.builder()
+    //             .quantity(orderRequest.getQuantity())
+    //             .product(product)
+    //             .price(product.getPrice())
+    //             .order(order)
+    //             .build();
+    // }
 }

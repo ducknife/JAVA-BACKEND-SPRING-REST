@@ -20,12 +20,12 @@ public class ProductResponse {
     private BigDecimal price;
     private CategoryDTO category;
     
-    public static ProductResponse from(Product product) {
-        return ProductResponse.builder()
-                            .id(product.getId())
-                            .name(product.getName())
-                            .price(product.getPrice())
-                            .category(CategoryDTO.from(product.getCategory()))
-                            .build();
-    }
+    // public static ProductResponse from(Product product) {
+    //     return ProductResponse.builder()
+    //                         .id(product.getId())
+    //                         .name(product.getName())
+    //                         .price(product.getPrice())
+    //                         .category(CategoryDTO.from(product.getCategory()))
+    //                         .build();
+    // }
 }

@@ -16,8 +16,10 @@ import com.ducknife.project.modules.order.action.OrderActionType;
 import com.ducknife.project.modules.order.discount.DiscountCalculator;
 import com.ducknife.project.modules.order.dto.OrderRequest;
 import com.ducknife.project.modules.order.dto.OrderResponse;
+import com.ducknife.project.modules.order.mapper.OrderMapper;
 import com.ducknife.project.modules.order.shipping.ShippingFeeCalculator;
 import com.ducknife.project.modules.orderdetail.OrderDetail;
+import com.ducknife.project.modules.orderdetail.mapper.OrderDetailMapper;
 import com.ducknife.project.modules.product.Product;
 import com.ducknife.project.modules.product.ProductRepository;
 import com.ducknife.project.modules.user.User;
@@ -36,18 +38,20 @@ public class OrderService {
         private final DiscountCalculator discountCalculator;
         private final OrderActionFactory orderActionFactory;
         private final ShippingFeeCalculator shippingFeeCalculator;
+        private final OrderDetailMapper orderDetailMapper;
+        private final OrderMapper orderMapper;
 
         public List<OrderResponse> getOrders() {
                 return orderRepository.findAll()
                                 .stream()
-                                .map(OrderResponse::from) // không còn bị N + 1 vì đã JOIN FETCH
+                                .map(orderMapper::toResponse) // không còn bị N + 1 vì đã JOIN FETCH
                                 .collect(Collectors.toList());
         }
 
         public OrderResponse getOrderById(Long id) {
                 Order order = orderRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng!"));
-                return OrderResponse.from(order);
+                return orderMapper.toResponse(order);
         }
 
         public Long countOrders() {
@@ -70,7 +74,7 @@ public class OrderService {
                                         Product product = productRepository.findById(od.getProductId())
                                                         .orElseThrow(() -> new ResourceNotFoundException(
                                                                         "Sản phẩm không tồn tại!"));
-                                        return OrderDetail.from(od, product, order);
+                                        return orderDetailMapper.toEntity(od, product, order);
                                 })
                                 .collect(Collectors.toList());
 
@@ -103,7 +107,7 @@ public class OrderService {
                 order.setOrderDetails(orderDetails);
                 order.setInvoice(invoice);
                 Order savedOrder = orderRepository.save(order);
-                return OrderResponse.from(savedOrder);
+                return orderMapper.toResponse(savedOrder);
         }
 
         // tiêu thụ factory

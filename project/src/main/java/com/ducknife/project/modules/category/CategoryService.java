@@ -11,8 +11,10 @@ import com.ducknife.project.common.exception.ResourceNotFoundException;
 import com.ducknife.project.modules.auditlog.AuditLog;
 import com.ducknife.project.modules.auditlog.AuditService;
 import com.ducknife.project.modules.category.dto.CategoryDTO;
+import com.ducknife.project.modules.category.mapper.CategoryMapper;
 import com.ducknife.project.modules.product.ProductRepository;
 import com.ducknife.project.modules.product.dto.ProductResponse;
+import com.ducknife.project.modules.product.mapper.ProductMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +27,8 @@ public class CategoryService {
     private final AuditService auditService;
     public final CategoryRepository categoryRepository;
     public final ProductRepository productRepository;
+    private final ProductMapper productMapper;
+    private final CategoryMapper categoryMapper;
 
     public List<CategoryDTO> getCategories() {
         // CategoryDTO res = this.getCategoryById(1L); <= self-invocation xảy ra do nó
@@ -37,7 +41,7 @@ public class CategoryService {
         // Cách tốt nhất là tách biệt Service, ví dụ gửi mail thì phải để trong
         // MailService, không nên để trong người dùng.
         return categoryRepository.findAll().stream()
-                .map(CategoryDTO::from)
+                .map(categoryMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -49,7 +53,7 @@ public class CategoryService {
         // category.setName("Test Persist of Entity"); <- Test Persist/Managed của
         // entity;
         // còn JdcbTemplate ko có dirty checking
-        return CategoryDTO.from(category);
+        return categoryMapper.toDto(category);
     }
     // hết hàm này object category kia chuyển về detached(), khi đó mọi thay đổi
     // không ảnh hưởng đến DB.
@@ -59,14 +63,14 @@ public class CategoryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy danh mục sản phẩm!"));
 
         return productRepository.findByCategoryId(id).stream()
-                .map(ProductResponse::from)
+                .map(productMapper::toResponse)
                 .collect(Collectors.toList());
 
     }
 
     public List<CategoryDTO> searchByName(String name) {
         return categoryRepository.findByName(name).stream()
-                .map(CategoryDTO::from)
+                .map(categoryMapper::toDto)
                 .collect(Collectors.toList());
     }
 

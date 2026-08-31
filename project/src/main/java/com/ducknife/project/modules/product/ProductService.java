@@ -16,6 +16,7 @@ import com.ducknife.project.modules.category.Category;
 import com.ducknife.project.modules.category.CategoryRepository;
 import com.ducknife.project.modules.product.dto.ProductRequest;
 import com.ducknife.project.modules.product.dto.ProductResponse;
+import com.ducknife.project.modules.product.mapper.ProductMapper;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final AuditService auditService;
+    private final ProductMapper productMapper;
 
     @PostConstruct
     public void showConfig() {
@@ -46,19 +48,19 @@ public class ProductService {
         log.info("CONTROLLER: Gọi vào nghiệp vụ lấy danh sách sản phẩm!");
         return productRepository.findAll()
                 .stream()
-                .map(ProductResponse::from)
+                .map(productMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     public ProductResponse getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm!"));
-        return ProductResponse.from(product);
+        return productMapper.toResponse(product);
     }
 
     public List<ProductResponse> getProductsByNameAndPrice(String name, double minPrice, double maxPrice) {
         return productRepository.findByNameAndPrice(name, minPrice, maxPrice).stream()
-                .map(ProductResponse::from)
+                .map(productMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -75,7 +77,7 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy danh mục sản phẩm"));
         productInDB.setCategory(category);
         Product savedProduct = productRepository.save(productInDB);
-        return ProductResponse.from(savedProduct);
+        return productMapper.toResponse(savedProduct);
     }
 
     @Transactional
@@ -87,18 +89,17 @@ public class ProductService {
         // }
         Category category = categoryRepository.findById(product.getCategory_id())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy danh mục sản phẩm!"));
-        Product newProduct = Product.builder()
-                .name(product.getName())
-                .price(product.getPrice())
-                .category(category)
-                .build();
+        Product newProduct = productMapper.toEntity(product);
+        newProduct.setCategory(category);
         Product savedProduct = productRepository.save(newProduct);
+
+        // audit log
         auditService.add(AuditLog.builder()
                 .logType("SERVER")
                 .logMessage("THÊM MỚI THÀNH CÔNG SẢN PHẨM")
                 .build());
         // throw new ResourceNotFoundException("NO"); // dù cha bị lỗi thì audit log add có transaction là required_new vẫn sống.
-        return ProductResponse.from(savedProduct);
+        return productMapper.toResponse(savedProduct);
     }
 
     @Transactional

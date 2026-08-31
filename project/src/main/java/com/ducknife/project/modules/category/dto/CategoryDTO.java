@@ -17,10 +17,10 @@ public class CategoryDTO {
     private String name;
     private Long id;
 
-    public static CategoryDTO from(Category category) {
-        return CategoryDTO.builder()    
-                        .name(category.getName())
-                        .id(category.getId())
-                        .build();
-    }
+    // public static CategoryDTO from(Category category) {
+    //     return CategoryDTO.builder()    
+    //                     .name(category.getName())
+    //                     .id(category.getId())
+    //                     .build();
+    // }
 }

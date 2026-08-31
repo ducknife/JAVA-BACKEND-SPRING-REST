@@ -19,6 +19,7 @@ import com.ducknife.project.common.exception.ResourceNotFoundException;
 import com.ducknife.project.modules.order.Order;
 import com.ducknife.project.modules.order.OrderRepository;
 import com.ducknife.project.modules.order.dto.OrderResponse;
+import com.ducknife.project.modules.order.mapper.OrderMapper;
 import com.ducknife.project.modules.role.Role;
 import com.ducknife.project.modules.role.RoleRepository;
 import com.ducknife.project.modules.user.dto.UserRequest;
@@ -37,6 +38,7 @@ public class UserService {
         private final RoleRepository roleRepository;
         private final PasswordEncoder passwordEncoder;
         private final UserMapper userMapper;
+        private final OrderMapper orderMapper;
 
         public UserResponse getMe(Jwt jwt) {
                 Long id = Long.valueOf(jwt.getClaimAsString("userId"));
@@ -81,7 +83,7 @@ public class UserService {
                 }
                 List<Order> orders = orderRepository.findByUserId(userId);
                 return orders.stream()
-                                .map(OrderResponse::from)
+                                .map(orderMapper::toResponse)
                                 .collect(Collectors.toList());
         }
 

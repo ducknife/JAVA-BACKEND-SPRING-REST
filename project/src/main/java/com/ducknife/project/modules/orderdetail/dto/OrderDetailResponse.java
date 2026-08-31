@@ -22,12 +22,12 @@ public class OrderDetailResponse {
     private Long quantity;
     private BigDecimal price;
 
-    public static OrderDetailResponse from(OrderDetail orderDetail) {
-        return OrderDetailResponse.builder()
-                .id(orderDetail.getId())
-                .product(ProductResponse.from(orderDetail.getProduct()))
-                .quantity(orderDetail.getQuantity())
-                .price(orderDetail.getPrice())
-                .build();
-    }
+    // public static OrderDetailResponse from(OrderDetail orderDetail) {
+    //     return OrderDetailResponse.builder()
+    //             .id(orderDetail.getId())
+    //             .product(ProductResponse.from(orderDetail.getProduct()))
+    //             .quantity(orderDetail.getQuantity())
+    //             .price(orderDetail.getPrice())
+    //             .build();
+    // }
 }
