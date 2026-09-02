@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ducknife.project.common.ResponseFactory;
+import com.ducknife.project.common.ApiResponse;
 import com.ducknife.project.common.validation.group.OnCreate;
 import com.ducknife.project.common.validation.group.OnUpdate;
 import com.ducknife.project.modules.order.dto.OrderResponse;
@@ -38,50 +38,50 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<ResponseFactory<Page<UserResponse>>> getUsers(
+    public ResponseEntity<ApiResponse<Page<UserResponse>>> getUsers(
             @PageableDefault(page = 0, sort = "fullname", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseFactory.ok(userService.getUsers(pageable));
+        return ApiResponse.ok(userService.getUsers(pageable));
     }
 
     @GetMapping("/test")
-    public ResponseEntity<ResponseFactory<List<UserResponse>>> getUsersByFullname(
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getUsersByFullname(
         @RequestParam String keyword
     ) {
-        return ResponseFactory.ok(userService.getUserByFullname(keyword));
+        return ApiResponse.ok(userService.getUserByFullname(keyword));
     }
 
     @GetMapping("/sort")
-    public ResponseEntity<ResponseFactory<List<UserResponse>>> getUserByIdLessThan(
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getUserByIdLessThan(
             @RequestParam(required = false) Long id,
             @SortDefault(sort = "id", direction = Sort.Direction.DESC) Sort sort) {
-        return ResponseFactory.ok(userService.getUsersByIdLessThan(id, sort));
+        return ApiResponse.ok(userService.getUsersByIdLessThan(id, sort));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseFactory<UserResponse>> getUserById(@PathVariable Long id) {
-        return ResponseFactory.ok(userService.getUserById(id));
+    public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable Long id) {
+        return ApiResponse.ok(userService.getUserById(id));
     }
 
     @GetMapping("/{id}/orders")
-    public ResponseEntity<ResponseFactory<List<OrderResponse>>> findOrdersById(@PathVariable Long id) {
-        return ResponseFactory.ok(userService.findOrdersById(id));
+    public ResponseEntity<ApiResponse<List<OrderResponse>>> findOrdersById(@PathVariable Long id) {
+        return ApiResponse.ok(userService.findOrdersById(id));
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ResponseFactory<UserResponse>> getMe(@AuthenticationPrincipal Jwt jwt) {
-        return ResponseFactory.ok(userService.getMe(jwt));
+    public ResponseEntity<ApiResponse<UserResponse>> getMe(@AuthenticationPrincipal Jwt jwt) {
+        return ApiResponse.ok(userService.getMe(jwt));
     }
 
     @PostMapping
-    public ResponseEntity<ResponseFactory<UserResponse>> addUser(@RequestBody @Validated(OnCreate.class) UserRequest user) {
+    public ResponseEntity<ApiResponse<UserResponse>> addUser(@RequestBody @Validated(OnCreate.class) UserRequest user) {
         UserResponse savedUser = userService.addUser(user);
-        return ResponseFactory.created(savedUser);
+        return ApiResponse.created(savedUser);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseFactory<String>> updateUser(@PathVariable Long id, @RequestBody @Validated(OnUpdate.class) UserRequest user) {
+    public ResponseEntity<ApiResponse<String>> updateUser(@PathVariable Long id, @RequestBody @Validated(OnUpdate.class) UserRequest user) {
         userService.updateUser(id, user);
-        return ResponseFactory.ok("Cập nhật người dùng thành công!");
+        return ApiResponse.ok("Cập nhật người dùng thành công!");
     }
 
     @DeleteMapping("/{id}")

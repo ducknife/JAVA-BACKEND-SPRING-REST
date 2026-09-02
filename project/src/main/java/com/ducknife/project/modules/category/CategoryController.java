@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ducknife.project.common.ResponseFactory;
+import com.ducknife.project.common.ApiResponse;
 import com.ducknife.project.modules.category.dto.CategoryDTO;
 import com.ducknife.project.modules.product.dto.ProductResponse;
 
@@ -34,32 +34,32 @@ public class CategoryController {
     private final CategoryService categoryService;
     
     @GetMapping
-    public ResponseEntity<ResponseFactory<List<CategoryDTO>>> showCategories() {
-        return ResponseFactory.ok(categoryService.getCategories());
+    public ResponseEntity<ApiResponse<List<CategoryDTO>>> showCategories() {
+        return ApiResponse.ok(categoryService.getCategories());
     }
 
     @GetMapping("/{cid}")
     // @PathVariable và @RequestParam dùng cơ chế WebDataBinder, WebDataBinder sẽ tìm các converter tương ứng để chuyển String -> kiểu tương ứng của biến
     // nếu chuyển thành công -> gán vào biến 
     // tên biến có thể khác tên trên url nhưng phải chỉ rõ là tên nào. Ví dụ @PathVariable("id") Long id 
-    public ResponseEntity<ResponseFactory<CategoryDTO>> showCategoryById(@PathVariable("cid") Long id) {
-        return ResponseFactory.ok(categoryService.getCategoryById(id));
+    public ResponseEntity<ApiResponse<CategoryDTO>> showCategoryById(@PathVariable("cid") Long id) {
+        return ApiResponse.ok(categoryService.getCategoryById(id));
     }
 
     @GetMapping("/{id}/products")
     // PathVariable lấy giá trị nằm trực tiếp trong url, thường là các giá trị định
     // danh duy nhất cho 1 tài nguyên
-    public ResponseEntity<ResponseFactory<List<ProductResponse>>> showProductsByCategoryId(@PathVariable Long id) {
-        return ResponseFactory.ok(categoryService.getProductsByCategoryId(id));
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> showProductsByCategoryId(@PathVariable Long id) {
+        return ApiResponse.ok(categoryService.getProductsByCategoryId(id));
     }
 
     @GetMapping("/search")
     // RequestParam lấy các giá trị sau dấu hỏi trên url, thường là các giá trị phụ
     // trợ (lọc, sắp xếp, phân trang).
-    public ResponseEntity<ResponseFactory<List<CategoryDTO>>> searchCategoryByName(
+    public ResponseEntity<ApiResponse<List<CategoryDTO>>> searchCategoryByName(
             @RequestParam(required = true) String name) {
 
-        return ResponseFactory.ok(categoryService.searchByName(name));
+        return ApiResponse.ok(categoryService.searchByName(name));
     }
 
     @PostMapping
@@ -69,23 +69,23 @@ public class CategoryController {
     // viện JACKSON (qua ObjectMapper) để phản tuần tự
     // Dùng reflection để quét các field sau đó tạo 1 object mới bằng default
     // Constructor rồi dùng setter để gán giá trị từ json vào
-    public ResponseEntity<ResponseFactory<CategoryDTO>> addNewCategory(@RequestBody @Valid CategoryDTO category) {
+    public ResponseEntity<ApiResponse<CategoryDTO>> addNewCategory(@RequestBody @Valid CategoryDTO category) {
         categoryService.addCategory(category);
         // categoryService.addCategory(Category.builder().name("OOP").build());
-        return ResponseFactory.created(category);
+        return ApiResponse.created(category);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseFactory<CategoryDTO>> updateCategoryInfo(@PathVariable Long id, @RequestBody @Valid CategoryDTO category) {
+    public ResponseEntity<ApiResponse<CategoryDTO>> updateCategoryInfo(@PathVariable Long id, @RequestBody @Valid CategoryDTO category) {
         categoryService.updateCategory(id, category);
-        return ResponseFactory.ok(category);
+        return ApiResponse.ok(category);
     }
 
     @PatchMapping("/{id}") // PATCH chỉ cập nhật 1 trường, nếu chỉ cập nhật trường tên thì code này giống
                            // code của PUT
-    public ResponseEntity<ResponseFactory<CategoryDTO>> updateCategoryName(@PathVariable Long id, @RequestBody @Valid CategoryDTO category) {
+    public ResponseEntity<ApiResponse<CategoryDTO>> updateCategoryName(@PathVariable Long id, @RequestBody @Valid CategoryDTO category) {
         categoryService.updateCategory(id, category);
-        return ResponseFactory.ok(category);
+        return ApiResponse.ok(category);
     }
 
     @DeleteMapping("/{id}")

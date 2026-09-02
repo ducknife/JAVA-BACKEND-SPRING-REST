@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ducknife.project.common.ResponseFactory;
+import com.ducknife.project.common.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +18,7 @@ public class AuditLogController {
     private final AuditService auditService;
 
     @GetMapping
-    public ResponseEntity<ResponseFactory<List<AuditLog>>> getAudits() {
-        return ResponseFactory.ok(auditService.getAuditLogs());
+    public ResponseEntity<ApiResponse<List<AuditLog>>> getAudits() {
+        return ApiResponse.ok(auditService.getAuditLogs());
     }
 }

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ResponseFactory<T> {
+public class ApiResponse<T> {
         private int status;
         private String message;
         private T data;
@@ -21,27 +21,27 @@ public class ResponseFactory<T> {
         // ↑ ↑ ↑
         // (1)Khai (2)Dùng (3)Dùng
         // báo cho output cho input
-        public static <T> ResponseEntity<ResponseFactory<T>> ok(T data) {
+        public static <T> ResponseEntity<ApiResponse<T>> ok(T data) {
                 return ResponseEntity.ok(
-                                ResponseFactory.<T>builder()
+                                ApiResponse.<T>builder()
                                                 .status(HttpStatus.OK.value()) // 200
                                                 .message("Success")
                                                 .data(data)
                                                 .build());
         }
 
-        public static <T> ResponseEntity<ResponseFactory<T>> created(T data) {
+        public static <T> ResponseEntity<ApiResponse<T>> created(T data) {
                 return ResponseEntity.status(HttpStatus.CREATED)
-                                .body(ResponseFactory.<T>builder()
+                                .body(ApiResponse.<T>builder()
                                                 .status(HttpStatus.CREATED.value()) // 201
                                                 .message("Created Successfully")
                                                 .data(data)
                                                 .build());
         }
 
-        public static ResponseEntity<ResponseFactory<?>> error(int status, String message) {
+        public static ResponseEntity<ApiResponse<?>> error(int status, String message) {
                 return ResponseEntity.status(status)
-                                .body(ResponseFactory.builder()
+                                .body(ApiResponse.builder()
                                                 .status(status)
                                                 .message(message)
                                                 .data(null)
