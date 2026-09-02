@@ -113,8 +113,8 @@ public class AddOrderTest {
         String productName = productCaptor.getValue().getName();
         String username = userCaptor.getValue().getUsername();
 
-        assertEquals(username, "hung", () -> "Tên khác mong đợi");
-        assertEquals(productName, "Spring", () -> "Tên khác mong đợi");
+        assertEquals("hung", username, () -> "Tên người dùng khác mong đợi");
+        assertEquals("Spring", productName, () -> "Tên sản phẩm khác mong đợi");
         assertEquals(0, new BigDecimal("1020000").compareTo(actual),
                 () -> "Mong đợi 1020000 nhưng nhận được " + actual);
     }
