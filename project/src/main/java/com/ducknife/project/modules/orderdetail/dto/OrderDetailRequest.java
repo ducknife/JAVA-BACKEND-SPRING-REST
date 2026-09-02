@@ -1,7 +1,8 @@
 package com.ducknife.project.modules.orderdetail.dto;
 
+import com.ducknife.project.common.validation.orderdetailquantity.OrderDetailQuantity;
+
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,6 @@ import lombok.Setter;
 public class OrderDetailRequest {
     @NotNull(message = "{orderdetail.product.notnull}")
     private Long productId;
-    @NotNull(message = "{orderdetail.quantity.notnull}")
-    @Positive(message = "{orderdetail.quantity.positive}")
+    @OrderDetailQuantity
     private Long quantity;
 }

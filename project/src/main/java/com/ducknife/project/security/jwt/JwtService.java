@@ -34,7 +34,9 @@ public class JwtService {
                 .map(GrantedAuthority::getAuthority)
                 .filter(auth -> !auth.startsWith("ROLE_"))
                 .collect(Collectors.joining(" "));
+        // Header
         JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
+        // Claim
         JwtClaimsSet.Builder builder = JwtClaimsSet.builder()
                 .issuer(jwtProps.getIssuer())
                 .issuedAt(now)
@@ -62,6 +64,4 @@ public class JwtService {
                 .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
     }
-
-    
 }

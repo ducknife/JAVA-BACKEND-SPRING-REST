@@ -28,21 +28,21 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class ProductService {
     // in ra thông tin trong file cấu hình
-    private final DataSourceProperties dataSourceProperties;
-    private final ServerProperties serverProperties;
+    // private final DataSourceProperties dataSourceProperties;
+    // private final ServerProperties serverProperties;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final AuditService auditService;
     private final ProductMapper productMapper;
 
-    @PostConstruct
-    public void showConfig() {
-        log.info("-".repeat(10) + "DATA SOURCE CONFIG:" + "-".repeat(10));
-        log.info(dataSourceProperties.getUrl());
-        log.info(dataSourceProperties.getUsername());
-        log.info("-".repeat(10) + "SERVICE CONFIG:" + "-".repeat(10));
-        log.info(Integer.toString(serverProperties.getPort()));
-    }
+    // @PostConstruct
+    // public void showConfig() {
+    //     log.info("-".repeat(10) + "DATA SOURCE CONFIG:" + "-".repeat(10));
+    //     log.info(dataSourceProperties.getUrl());
+    //     log.info(dataSourceProperties.getUsername());
+    //     log.info("-".repeat(10) + "SERVICE CONFIG:" + "-".repeat(10));
+    //     log.info(Integer.toString(serverProperties.getPort()));
+    // }
 
     public List<ProductResponse> getProducts() {
         log.info("CONTROLLER: Gọi vào nghiệp vụ lấy danh sách sản phẩm!");

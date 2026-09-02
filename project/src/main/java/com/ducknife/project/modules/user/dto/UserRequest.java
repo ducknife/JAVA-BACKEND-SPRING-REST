@@ -28,6 +28,7 @@ NotBlank = NotNull + trim().length() > 0  */
 public class UserRequest {
     @NotBlank(message = "{user.fullname.notblank}", groups = { OnUpdate.class, BasicCheck.class })
     private String fullname;
+    // Tất cả basicCheck sẽ chạy trước DbCheck
     @UniqueUsername(groups = { DbCheck.class })
     @Username(groups = { BasicCheck.class, OnUpdate.class })
     private String username;

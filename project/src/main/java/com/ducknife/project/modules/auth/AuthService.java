@@ -60,6 +60,7 @@ public class AuthService {
                 .build();
     }
 
+    // Lấy access token mới = refresh token
     public AuthResponse refresh(RefreshTokenRequest request) {
         Jwt refreshToken;
         try {
@@ -84,6 +85,7 @@ public class AuthService {
                 .build();
     }
 
+    // Logout phải gửi kèm access token và refresh token: vì phải đăng nhập mới logout được
     @Transactional
     public void logout(Jwt accessToken, LogoutRequest request) {
         tokenBlacklistService.revoke(accessToken.getId(), accessToken.getExpiresAt());
@@ -96,6 +98,8 @@ public class AuthService {
         }
     }
 
+    // đổi mật khẩu cũng phải gửi kèm access token và refresh token
+    // đổi xong thì phải đăng nhập lại -> revoke token đi
     @Transactional
     public void changePassword(Jwt accessToken, ChangePasswordRequest request) {
         User user = userRepository.findByUsername(accessToken.getSubject())

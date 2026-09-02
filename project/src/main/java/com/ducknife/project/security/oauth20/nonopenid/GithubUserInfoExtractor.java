@@ -1,4 +1,4 @@
-package com.ducknife.project.security.oauth20;
+package com.ducknife.project.security.oauth20.nonopenid;
 
 import java.util.List;
 
@@ -7,6 +7,9 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+
+import com.ducknife.project.security.oauth20.OAuth2UserInfo;
+import com.ducknife.project.security.oauth20.OAuth2UserInfoExtractor;
 
 @Component
 public class GithubUserInfoExtractor implements OAuth2UserInfoExtractor {

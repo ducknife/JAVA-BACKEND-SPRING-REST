@@ -40,14 +40,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        http.csrf(csrf -> csrf.disable()) // tắt csrf vì dùng jwt
+                .cors(cors -> cors.configurationSource(corsConfigurationSource)) // bật cors
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // stateless vì dùng jwt
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login", "/api/auth/refresh", "/api/auth/oauth2/exchange")
                         .permitAll()
                         .requestMatchers("/api/products/**").permitAll()
                         .anyRequest().authenticated())
+                // bật Cấu hình jwt 
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
                                 .decoder(jwtDecoder)
@@ -66,12 +67,13 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // Cung cấp AuthenticationManager
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    // Mã hóa mật khẩu
+    // Mã hóa mật khẩu đơn giản: trong thực tế dùng keycloak: 1 server riêng cho bảo mật
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();

@@ -1,6 +1,9 @@
-package com.ducknife.project.security.oauth20;
+package com.ducknife.project.security.oauth20.openid;
 
 import org.springframework.security.oauth2.core.user.OAuth2User;
+
+import com.ducknife.project.security.oauth20.OAuth2UserInfo;
+import com.ducknife.project.security.oauth20.OAuth2UserInfoExtractor;
 
 public class GoogleUserInfoExtractor implements OAuth2UserInfoExtractor {
 

@@ -43,6 +43,8 @@ public class JwtConfig {
     private final JwtProperties jwtProps;
     private final TokenBlacklistService tokenBlacklistService;
 
+    // encode jwt -> trả về 1 cái máy mẫ hoá với thuật toán HmacSHA256 
+    // Do là khoá đối xứng nên dùng OctetSequenceKey 
     @Bean
     public JwtEncoder jwtEncoder() {
         byte[] secretKeyBytes = Base64.getDecoder().decode(jwtProps.getSecretKey());
@@ -54,6 +56,9 @@ public class JwtConfig {
         return new NimbusJwtEncoder(jwkSource);
     }
 
+    // decode jwt -> trả về 1 cái máy giải mã với thuật toán HmacSHA256 
+    // khi giải mã xong -> kiểm tra xem có trong black list không
+    // nếu có thì báo lỗi luôn
     @Bean
     public JwtDecoder jwtDecoder() {
         byte[] secretKeyBytes = Base64.getDecoder().decode(jwtProps.getSecretKey());
@@ -72,6 +77,7 @@ public class JwtConfig {
         return decoder;
     }
 
+    // Converter role, permission
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();

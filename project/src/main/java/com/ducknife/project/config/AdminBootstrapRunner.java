@@ -15,6 +15,7 @@ import com.ducknife.project.modules.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
+// seed admin
 @Component
 @RequiredArgsConstructor
 public class AdminBootstrapRunner implements CommandLineRunner {

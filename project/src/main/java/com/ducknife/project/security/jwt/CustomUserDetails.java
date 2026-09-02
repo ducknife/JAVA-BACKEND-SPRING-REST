@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class CustomUserDetails implements AppUserDetails {
+    
     private final User user;
 
     @Override

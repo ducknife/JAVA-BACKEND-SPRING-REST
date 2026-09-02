@@ -24,6 +24,10 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
     private final OAuth2ExchangeStore exchangeStore;
     private final CorsProperties corsProperties;
 
+    // login thành công = OAuth2 thì trả về access token và refresh token
+    // đồng thời trả về 1 cái mã tương ứng để ánh xạ với cái hộp chứa 2 loại token trên
+    // sau đó điều hướng về url frontend với cái code vừa tạo để frontend tách 
+    // ra và dùng đổi lấy 2 loại token
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException {

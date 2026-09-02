@@ -58,7 +58,7 @@ public class OrderService {
                 return orderRepository.count();
         }
 
-        public Boolean OrderExistedById(Long id) {
+        public Boolean orderExistedById(Long id) {
                 return orderRepository.existsById(id);
         }
 
