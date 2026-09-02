@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ducknife.project.common.ApiResponse;
+import com.ducknife.project.common.ResponseFactory;
 import com.ducknife.project.modules.order.action.OrderActionType;
 import com.ducknife.project.modules.order.dto.OrderRequest;
 import com.ducknife.project.modules.order.dto.OrderResponse;
@@ -25,24 +25,24 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<OrderResponse>>> getOrders() {
-        return ApiResponse.ok(orderService.getOrders());
+    public ResponseEntity<ResponseFactory<List<OrderResponse>>> getOrders() {
+        return ResponseFactory.ok(orderService.getOrders());
     }
 
     @GetMapping("/count")
-    public ResponseEntity<ApiResponse<Long>> countOrders() {
-        return ApiResponse.ok(orderService.countOrders());
+    public ResponseEntity<ResponseFactory<Long>> countOrders() {
+        return ResponseFactory.ok(orderService.countOrders());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<OrderResponse>> getOrderById(@PathVariable Long id) {
-        return ApiResponse.ok(orderService.getOrderById(id));
+    public ResponseEntity<ResponseFactory<OrderResponse>> getOrderById(@PathVariable Long id) {
+        return ResponseFactory.ok(orderService.getOrderById(id));
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<OrderResponse>> addOrder(@RequestBody @Valid OrderRequest order) {
+    public ResponseEntity<ResponseFactory<OrderResponse>> addOrder(@RequestBody @Valid OrderRequest order) {
         OrderResponse savedOrder = orderService.add(order);
-        return ApiResponse.created(savedOrder);
+        return ResponseFactory.created(savedOrder);
     }
 
     @PostMapping("/cancel/{id}")

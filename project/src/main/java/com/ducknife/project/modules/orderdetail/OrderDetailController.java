@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ducknife.project.common.ApiResponse;
+import com.ducknife.project.common.ResponseFactory;
 import com.ducknife.project.modules.orderdetail.dto.OrderDetailResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class OrderDetailController {
     private final OrderDetailService orderDetailService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<OrderDetailResponse>>> getOrderDetails() {
-        return ApiResponse.ok(orderDetailService.getOrderDetails());
+    public ResponseEntity<ResponseFactory<List<OrderDetailResponse>>> getOrderDetails() {
+        return ResponseFactory.ok(orderDetailService.getOrderDetails());
     }
 }

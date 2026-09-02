@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ducknife.project.common.ApiResponse;
+import com.ducknife.project.common.ResponseFactory;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +19,7 @@ public class RoleController {
     private final RoleService roleService;
     
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Role>>> getRoles() {
-        return ApiResponse.ok(roleService.getRoles());
+    public ResponseEntity<ResponseFactory<List<Role>>> getRoles() {
+        return ResponseFactory.ok(roleService.getRoles());
     }
 }

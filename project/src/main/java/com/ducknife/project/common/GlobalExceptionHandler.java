@@ -32,50 +32,50 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler { // 
 
     // bắt lỗi nghiệp vụ
     @ExceptionHandler(AppException.class) // lấy nó và tất cả class con của nó
-    public ResponseEntity<ApiResponse<?>> handleAppException(AppException e) {
-        return ApiResponse.error(e.getErrorCode(), e.getMessage());
+    public ResponseEntity<ResponseFactory<?>> handleAppException(AppException e) {
+        return ResponseFactory.error(e.getErrorCode(), e.getMessage());
     }
 
     // Bắt lỗi duplicateKey -> Spring bắt từ DB, dùng cho JdbcTemplate
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<ApiResponse<?>> handleDuplicateKey(DuplicateKeyException e) {
+    public ResponseEntity<ResponseFactory<?>> handleDuplicateKey(DuplicateKeyException e) {
         log.warn("Trùng khóa khi ghi DB: {}", e.getMessage());
-        return ApiResponse.error(409, "Dữ liệu đã tồn tại trong hệ thống");
+        return ResponseFactory.error(409, "Dữ liệu đã tồn tại trong hệ thống");
     }
 
     // Bắt lỗi từ DB -> dùng cho Spring data jpa
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ApiResponse<?>> handleDataViolation(DataIntegrityViolationException e) {
+    public ResponseEntity<ResponseFactory<?>> handleDataViolation(DataIntegrityViolationException e) {
         log.warn("Vi phạm ràng buộc DB: {}", e.getMessage());
-        return ApiResponse.error(409, "Dữ liệu đã tồn tại trong hệ thống");
+        return ResponseFactory.error(409, "Dữ liệu đã tồn tại trong hệ thống");
     }
 
     // Bắt lỗi xác thực
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ApiResponse<?>> handleAuthenticationException(AuthenticationException e) {
+    public ResponseEntity<ResponseFactory<?>> handleAuthenticationException(AuthenticationException e) {
         String message = (e instanceof BadCredentialsException)
                 ? "Tài khoản hoặc mật khẩu không chính xác"
                 : "Xác thực không thành công";
-        return ApiResponse.error(401, message);
+        return ResponseFactory.error(401, message);
     }
 
     // Bắt lỗi phân quyền
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<?>> handleAccessDeniedException(AccessDeniedException e) {
-        return ApiResponse.error(403, "Bạn không có quyền truy cập vào tài nguyên này");
+    public ResponseEntity<ResponseFactory<?>> handleAccessDeniedException(AccessDeniedException e) {
+        return ResponseFactory.error(403, "Bạn không có quyền truy cập vào tài nguyên này");
     }
 
     // Bắt lỗi truyền type không đúng 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ApiResponse<?>> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
-        return ApiResponse.error(400, "Tham số " + e.getName() + " không hợp lệ");
+    public ResponseEntity<ResponseFactory<?>> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
+        return ResponseFactory.error(400, "Tham số " + e.getName() + " không hợp lệ");
     }
 
     // Bắt lỗi hệ thống, lưới cuối cùng bắt những lỗi ko ngờ tới
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<?>> handleUnwantedException(Exception e) {
+    public ResponseEntity<ResponseFactory<?>> handleUnwantedException(Exception e) {
         log.error("Lỗi không lường trước: {}", e.getMessage(), e);
-        return ApiResponse.error(500, "Lỗi hệ thống, vui lòng thử lại sau!");
+        return ResponseFactory.error(500, "Lỗi hệ thống, vui lòng thử lại sau!");
     }
 
     // Bắt lỗi validation
@@ -124,9 +124,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler { // 
             log.warn("Request lỗi [{}] {}: {}", statusCode.value(), e.getClass().getSimpleName(), e.getMessage());
         }
 
-        Object payload = (body instanceof ApiResponse)
+        Object payload = (body instanceof ResponseFactory)
                 ? body
-                : ApiResponse.<Object>builder()
+                : ResponseFactory.<Object>builder()
                         .status(statusCode.value())
                         .message(messageFor(statusCode))
                         .data(null)
@@ -139,7 +139,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler { // 
 
     private ResponseEntity<Object> respond(Exception e, String message, Object data,
             HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        ApiResponse<Object> payload = ApiResponse.<Object>builder()
+        ResponseFactory<Object> payload = ResponseFactory.<Object>builder()
                 .status(status.value())
                 .message(message)
                 .data(data)

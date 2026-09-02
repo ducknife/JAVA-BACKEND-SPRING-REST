@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ducknife.project.common.ApiResponse;
+import com.ducknife.project.common.ResponseFactory;
 import com.ducknife.project.modules.invoice.dto.InvoiceResponse;
 import com.ducknife.project.modules.invoice.export.InvoiceExportType;
 
@@ -22,23 +22,23 @@ public class InvoiceController {
     private final InvoiceService invoiceService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<InvoiceResponse>>> getInvoices() {
-        return ApiResponse.ok(invoiceService.getInvoices());
+    public ResponseEntity<ResponseFactory<List<InvoiceResponse>>> getInvoices() {
+        return ResponseFactory.ok(invoiceService.getInvoices());
     }
 
     @GetMapping("/orders/{orderId}/invoice")
-    public ResponseEntity<ApiResponse<InvoiceResponse>> getInvoiceByOrderId(
+    public ResponseEntity<ResponseFactory<InvoiceResponse>> getInvoiceByOrderId(
         @PathVariable Long orderId
     ) {
-        return ApiResponse.ok(invoiceService.getInvoiceByOrderId(orderId));
+        return ResponseFactory.ok(invoiceService.getInvoiceByOrderId(orderId));
     }
 
     @GetMapping("/info")
-    public ResponseEntity<ApiResponse<String>> getInvoiceInfo(
+    public ResponseEntity<ResponseFactory<String>> getInvoiceInfo(
         @RequestParam Long invoiceId,
         @RequestParam(required = false, defaultValue = "SIMPLE") InvoiceExportType type
     ) {
-        return ApiResponse.ok(invoiceService.getInfo(invoiceId, type));
+        return ResponseFactory.ok(invoiceService.getInfo(invoiceId, type));
     }
     
 }
