@@ -20,6 +20,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,6 +35,7 @@ import com.ducknife.project.modules.order.discount.DiscountCalculator;
 import com.ducknife.project.modules.order.dto.OrderResponse;
 import com.ducknife.project.modules.order.mapper.OrderMapper;
 import com.ducknife.project.modules.order.shipping.ShippingFeeCalculator;
+import com.ducknife.project.modules.orderdetail.OrderDetail;
 import com.ducknife.project.modules.orderdetail.mapper.OrderDetailMapper;
 import com.ducknife.project.modules.product.ProductRepository;
 import com.ducknife.project.modules.user.UserRepository;
@@ -153,7 +155,11 @@ public class OrderTest {
         when(orderMapper.toResponse(order)).thenReturn(response);
 
         OrderResponse result = orderService.getOrderById(1L);
+    
+        ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
+        verify(orderMapper, times(1)).toResponse(orderCaptor.capture());
 
+        assertEquals(1L, orderCaptor.getValue().getId());
         assertEquals(1L, result.getId());
 
         // verify: xác nhận mock được gọi
