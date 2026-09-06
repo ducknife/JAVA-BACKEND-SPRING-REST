@@ -38,6 +38,6 @@ public class AuditLog {
     private String logMessage;
 
     @Column(name = "create_at")
-    @CreatedDate
+    @CreatedDate // tự động điền do EnableJpaAuditing
     private LocalDateTime createdAt;
 }

@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication // = @Configuration + @EnableAutoConfiguration + @ComponentScan
-@EnableJpaAuditing
+// @EnableJpaAuditing
 public class ProjectApplication {
 
 	public static void main(String[] args) {
