@@ -1,11 +1,12 @@
 package com.ducknife.project.unit;
 
+import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.ducknife.project.common.exception.ResourceNotFoundException;
 import com.ducknife.project.modules.category.CategoryController;
 import com.ducknife.project.modules.category.CategoryService;
 import com.ducknife.project.modules.category.dto.CategoryDTO;
@@ -22,7 +24,7 @@ import com.ducknife.project.modules.category.dto.CategoryDTO;
 import tools.jackson.databind.ObjectMapper;
 
 @WebMvcTest(CategoryController.class) // test tầng controller, thêm class để chỉ load controller đó
-public class AddNewCategoryTest {
+public class CategoryControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -58,5 +60,17 @@ public class AddNewCategoryTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.name").value("MLB"))
                 .andExpect(jsonPath("$.data.id").value(1L));
+    }
+
+    @Test
+    @WithMockUser
+    public void layThongTinDanhMuc_KhongTonTai() throws Exception {
+
+        when(categoryService.getCategoryById(20L))
+                .thenThrow(new ResourceNotFoundException("Không tìm thấy danh mục")); // thenThrow
+
+        mockMvc.perform(get("/api/categories/20"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.data").value(nullValue()));
     }
 }
