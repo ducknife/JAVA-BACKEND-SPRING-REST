@@ -27,4 +27,9 @@ public class RevokedToken {
 
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
+
+    @Override 
+    public String toString() {
+        return "JTI: " + jti;
+    }
 }
